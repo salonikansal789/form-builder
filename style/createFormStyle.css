@@ -158,3 +158,18 @@ position: relative;
     background-color: #ccc;
     border-radius: 50%;
   }
+
+  @media (max-width:762px) {
+    .create-form-container{
+        width:100%;
+           display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;   
+    }
+    .show-form-fields{
+        width:100%;       
+    }
+    .edit-form-fields,.input-group{
+    width:100%;
+    }
+  }

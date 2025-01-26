@@ -67,6 +67,8 @@ font-size: 13px;
 }
 .form-delete{
     color:red;
+    cursor: pointer;
+    font-size: 13px!important;
 }
 .form-show-container h2{
     text-align: left;

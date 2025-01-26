@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { createForm } from "../services/formAPI";
 import '../style/createFormStyle.css';
 import '../style/formListStyle.css';
@@ -8,14 +7,14 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 
 function CreateForm() {
 
-  const [selectField,setSelectField]=useState(true);
+  const [selectField,setSelectField]=useState(false);
   const [isTitleField,setIsTitleField]=useState(false);
   const [selectFieldType,setSelectFieldType]=useState('Text');
   const [showInput,setShowInput]=useState(false);
-
+const [currentFieldIndex,setCurrentFieldIndex]=useState(0);
   const [form, setForm] = useState({
-    title: "Untitled Form",
-    inputs: [  ],
+    title: "",
+    inputs: [],
   });
 
   const [newInput, setNewInput] = useState({
@@ -26,21 +25,28 @@ function CreateForm() {
 
   const navigate = useNavigate();
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const reorderedInputs = Array.from(form.inputs);
-    const [removed] = reorderedInputs.splice(result.source.index, 1);
-    reorderedInputs.splice(result.destination.index, 0, removed);
-
-    setForm({ ...form, inputs: reorderedInputs });
-  };
-
-  const handleAddInput = () => {
-    if (!newInput.type) {
-      alert("Please select an input type!");
-      return;
-    }
+  const handleeditInput = (type,index) => {
+      if(isTitleField)
+      {
+        setIsTitleField(false);
+      }
+      if(!selectField)
+      {
+        setSelectField(true);
+      }
+      setCurrentFieldIndex(index);
+      setSelectFieldType(type)
+  }
+  const handleDeleteInput=(index)=>{
+   alert(index)
+    setForm((prevForm) => {
+      const updatedInputs = [...prevForm.inputs];
+      updatedInputs.splice(index, 1)
+      return { ...prevForm, inputs: updatedInputs };
+    });
+    
+  }
+  const handleAddInput = (type) => {
     if (form.inputs.length >= 20) {
       alert("Maximum of 20 inputs allowed!");
       return;
@@ -48,7 +54,9 @@ function CreateForm() {
 
     setForm({
       ...form,
-      inputs: [...form.inputs, { ...newInput }],
+      inputs: [...form.inputs, {   type: type,
+        title: "",
+        placeholder: '', }],
     });
 
     setNewInput({
@@ -77,7 +85,17 @@ function CreateForm() {
       alert("Failed to create form. Please try again.");
     }
   };
-
+  const handleFieldChange = (key, value) => {
+    setForm((prevForm) => {
+      const updatedInputs = [...prevForm.inputs];
+      updatedInputs[currentFieldIndex] = {
+        ...updatedInputs[currentFieldIndex],
+        [key]: value,
+      };
+      console.log('djfjf')
+      return { ...prevForm, inputs: updatedInputs };
+    });
+  };
   return (
     
     <div className="main-container">
@@ -85,8 +103,10 @@ function CreateForm() {
       <div className="create-form-container">
         <div className="show-form-fields">
           <div className="form-title-edit-field">
-            <input type="text" id="title-input-field" class="title-input-field" placeholder="Untitled Title"/>
-            <FaPen size={16} color="blue"/>
+            <input type="text" id="title-input-field" class="title-input-field" placeholder="Untitled Title" value={form.title}/>
+            <FaPen size={14} color="blue" onClick={()=>{setSelectField(true);
+              setIsTitleField(true);
+            }}/>
           </div>
           <div className="show-all-fields">
             {
@@ -103,12 +123,12 @@ function CreateForm() {
           <input
             type={input.type}
             name={input.title.toLowerCase()}
-            value={input.value || ''}
-            placeholder={input.placeholder}
+            value={input.title || ''}
+            placeholder='Title'
             onChange={(e) => handleInputChange(e, index)}
           />
-            <FaPen size={12} color="blue"/>
-            <FaTrash size={12} color="red"/>
+            <FaPen size={12} color="blue" onClick={()=>handleeditInput(input.type,index)}/>
+            <FaTrash size={12} color="red" onClick={()=>handleDeleteInput(index)}/>
         </div>
               ))
             }
@@ -117,11 +137,11 @@ function CreateForm() {
           {
             showInput&&(
               <div className="input-buttons">
-              <button className="input-button">TEXT</button>
-              <button className="input-button">NUMBER</button>
-              <button className="input-button">EMAIL</button>
-              <button className="input-button">PASSWORD</button>
-              <button className="input-button">DATE</button>
+              <button className="input-button" onClick={() => handleAddInput("text")}>TEXT</button>
+              <button className="input-button" onClick={() => handleAddInput("number")}>NUMBER</button>
+              <button className="input-button" onClick={() => handleAddInput("email")}>EMAIL</button>
+              <button className="input-button" onClick={() => handleAddInput("password")}>PASSWORD</button>
+              <button className="input-button" onClick={() => handleAddInput("date")}>DATE</button>
             </div>
             )
           }
@@ -136,17 +156,18 @@ function CreateForm() {
                 {
                   isTitleField ?
                   <div class="input-container">
-                  <input type="text" id="text-input-field" class="input-field" placeholder="Title"/>
+                  <input type="text" id="text-input-field" class="input-field" placeholder="Title" value={form.title} onChange={(e)=>setForm({ ...form, title: e.target.value })}/>
                   <label for="input-field" class="floating-label">Title</label>
                   </div>                
                   :
                   <div>
                     <h4>{selectFieldType}</h4>
                   <div class="input-container">
-                  <input type="text" id="input-field" class="input-field" placeholder="Title"/>
+                  <input type={selectFieldType} id="input-field" class="input-field" placeholder="Title" value={form.inputs[currentFieldIndex].title}
+                  onChange={(e)=>handleFieldChange('title',e.target.value)}/>
                   <label for="input-field" class="floating-label">Title</label>
                   </div> 
-                  <input type="text" id="placeholder-field" class="placeholder-field" placeholder="Placeholder"/>
+                  <input type="text" id="placeholder-field" class="placeholder-field" placeholder="Placeholder" value={form.inputs[currentFieldIndex].placeholder}   onChange={(e)=>handleFieldChange('placeholder',e.target.value,)}/>
                   </div>
                 }
             </div>

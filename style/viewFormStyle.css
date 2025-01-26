@@ -26,3 +26,12 @@
     border-bottom: 1px solid #ccc;
 width:40%;
 }
+@media (max-width:762px) {
+    .view-container{
+        height: auto;
+    }
+    .view-form-title{
+        font-size: 20px;
+        margin-bottom: 2rem;
+    }
+}
