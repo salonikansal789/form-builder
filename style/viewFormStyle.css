@@ -1,0 +1,28 @@
+.view-container{
+    display: flex;
+    justify-content: space-between;
+    height: 300px;
+    max-height: auto;
+    overflow-y: auto;
+    padding: 1rem;
+    align-items: center;
+    flex-direction: column;
+    width:60%;
+    margin: 0 auto;
+    margin-top: 5rem;
+    border-bottom: none;
+    box-shadow: 0 4px 8px #ccc;
+}
+.show-view-from{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap:2rem;
+    width: 80%;
+}
+.view-form-field{
+    color:black;
+    border-bottom: 1px solid #ccc;
+width:40%;
+}
